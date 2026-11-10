@@ -2,7 +2,7 @@
 
 파이널판타지14 팬페스티벌에서 서로 나누는 **빛의 전사 명함**(ヒカセン名刺)을 만드는 도구.
 캐릭터 사진과 진행도·플레이 성향·접속 시간대를 명함 한 장에 담아, 화면용 PNG와 인쇄용
-CMYK PDF로 저장한다. 2027년 3월 팬페스티벌 서울을 겨냥한 한국어판이다.
+CMYK PDF로 저장한다. 2027년 3월 팬페스티벌 서울을 겨냥해 만들었고, 한국어·일본어·영어를 지원한다.
 
 배포 주소: <https://finalfantasyxiv-wol-card.pages.dev>
 
@@ -68,6 +68,40 @@ QR 코드는 밀도와 무관하게 논리 단위 100(약 9mm) 아래로 줄이�
 
 종이 질감을 맨 마지막에 덮는다. 그래야 흐리게 녹인 사진 가장자리와 단색 면이 종이와
 같은 결을 가진다. 질감을 먼저 깔면 덮인 부분만 매끈하게 떠 보인다.
+
+## 다국어
+
+화면과 명함 모두 한국어 / 日本語 / English를 지원한다. 화면 언어(`S.lang`)와 명함 언어(`S.cardLang`)는
+따로 고를 수 있다. 일본어 화면으로 작업하면서 명함만 한국어로 뽑는 식이다. 첫 방문은 브라우저 언어를 따른다.
+
+번역은 키를 따로 두지 않고 **한국어 원문 자체를 키로** 쓴다. `TX`가 한국어 문장 → [일본어, 영어] 표이고,
+`{name}`이 들어간 항목은 템플릿이다.
+
+| 대상 | 방식 |
+|---|---|
+| 편집 화면 | `MutationObserver`가 새로 생기는 한글 텍스트 노드와 `placeholder`·`aria-label`·`title`·`alt`·`label` 속성을 표에서 찾아 바꾼다. 화면을 그리는 코드는 한국어 그대로 둔다 |
+| 문장 조립 | 변수가 끼어 문장이 갈라지는 곳(파일 이름, 형식 안내, 레이어 설명 등)만 코드에서 `L(원문, 변수)`로 직접 번역한다 |
+| 명함 | 캔버스에는 관찰할 DOM이 없으므로 그리는 자리마다 `C(원문)`을 거친다 |
+
+화면 언어를 바꾸면 저장 후 새로고침한다. 이미 번역된 글자를 한국어로 되돌릴 원본을 따로 보관하지 않기 위해서다.
+저장값(종족, 콘텐츠 칩, 서버 등)은 언어와 무관하게 한국어 원문으로 저장되므로, 언어를 바꿔도 입력이 유지된다.
+
+새 문구를 추가할 때는 `TX`에 한 줄 넣으면 된다. 빠뜨리면 그 문구만 한국어로 남는다. 테스트에서는 일본어·영어
+화면을 열고 모든 탭을 연 뒤 한글이 남은 노드를 수집해 0개인지 확인한다.
+
+### 명함 글꼴과 권리 표기
+
+- 글꼴은 **명함 언어마다 따로 고르고 따로 기억한다**(`S.font.ko / ja / en`). 한국어 글꼴에는 가나가 없고,
+  영문 명함은 라틴 전용 서체가 더 어울리기 때문이다. 이름에 한글이 섞여 있으면 한국어 글꼴로 대체된다.
+- 명함 하단의 권리 표기와 조건 주소는 **명함 언어가 아니라 월드의 지역**을 따른다. 서비스마다 저작물 이용
+  조건이 따로 있기 때문이다. 직접 입력한 월드처럼 지역을 알 수 없으면 명함 언어로 정한다.
+
+| 지역 | 표기 | 조건 주소 |
+|---|---|---|
+| 한국 | © SQUARE ENIX Published in Korea by Actoz Soft CO., LTD. | ff14.co.kr/support/policy |
+| 일본 | © SQUARE ENIX | sqex.to/FFXIVMU |
+| 북미·오세아니아 | FINAL FANTASY XIV © 2010 - (올해) SQUARE ENIX CO., LTD. All Rights Reserved. | na.finalfantasyxiv.com/license/ |
+| 유럽 | 위와 같음 | eu.finalfantasyxiv.com/license/ |
 
 ## 색
 
@@ -135,10 +169,16 @@ GCR 방식이라 무채색은 먹 1도로 찍힌다. 작은 글자가 판 어긋
 
 ## 글꼴
 
-| 구분 | 선택지 |
-|---|---|
-| 제목·닉네임·칭호 | 기본(보도니 + 고운바탕), 고운바탕, 나눔명조, 본명조, 함렛, 송명, 본고딕, 나눔고딕, 고운돋움, 도현, 주아, 검은고딕, 개구, 나눔손글씨 펜, 오르빗 |
-| 본문 | IBM Plex Sans KR(기본), 본고딕, 나눔고딕, 고딕 A1, 고운돋움, 본명조, 나눔명조, 고운바탕 |
+명함 언어마다 목록이 다르다. 모두 Google Fonts의 SIL OFL 글꼴이다.
+
+| 명함 언어 | 제목·닉네임·칭호 | 본문 |
+|---|---|---|
+| 한국어 | 기본(보도니 + 고운바탕), 고운바탕, 나눔명조, 본명조, 함렛, 송명, 본고딕, 나눔고딕, 고운돋움, 도현, 주아, 검은고딕, 개구, 나눔손글씨 펜, 오르빗 | IBM Plex Sans KR(기본), 본고딕, 나눔고딕, 고딕 A1, 고운돋움, 본명조, 나눔명조, 고운바탕 |
+| 日本語 | 기본(보도니 + Noto Serif JP), Noto Serif JP, しっぽり明朝, Zen Old Mincho, 解星デコール, 佑字 肅, Noto Sans JP, M PLUS Rounded 1c, Zen Maru Gothic, 小杉丸ゴシック, Dela Gothic One, 油性マジック, クレー, はちまるポップ, DotGothic16 | IBM Plex Sans JP(기본), Noto Sans JP, Zen Kaku Gothic New, M PLUS 1p, BIZ UDPゴシック, Zen Maru Gothic, Noto Serif JP, しっぽり明朝, クレー |
+| English | 기본(보도니), Playfair Display, Cormorant Garamond, EB Garamond, Cinzel, Libre Baskerville, DM Serif Display, Fraunces, Josefin Sans, Montserrat, Space Grotesk, Caveat, Dancing Script | IBM Plex Sans(기본), Inter, Lato, Source Sans 3, Work Sans, Montserrat, EB Garamond, Lora, Libre Baskerville |
+
+Google Fonts 요청은 한국어·일본어·영어 글꼴을 언어별 `<link>`로 나눠 둔다. CSS2 요청에 존재하지 않는
+굵기가 하나라도 섞이면 그 요청 전체가 실패하므로, 한 묶음이 깨져도 다른 언어 글꼴은 살아남게 하려는 것이다.
 
 영문 장식(섹션 영문 부제, 스파인, 메인 스토리 버전 숫자)은 어떤 조합에서도 Bodoni Moda다.
 굵기가 하나뿐인 글꼴은 가짜 굵게를 피하려고 가장 가까운 실제 굵기로 그린다.
@@ -195,7 +235,7 @@ Cloudflare Pages, `main` 브랜치에 커밋하면 자동 배포된다.
 
 ## 다음 작업
 
-- 글로벌 서버 지원: 다국어(일본어·영어) 화면과 로드스톤 캐릭터 불러오기
+- 로드스톤 캐릭터 불러오기(글로벌 서버)
 - 글자 레이어
 
 ## 라이선스 / 이용 조건

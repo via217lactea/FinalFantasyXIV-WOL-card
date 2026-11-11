@@ -2109,7 +2109,8 @@ function buildPdf(pages) {
     push('endobj\n');
   };
   const f = v => (+v.toFixed(3)).toString();
-  push('%PDF-1.4\n'); push(new Uint8Array([37, 226, 227, 207, 211, 10]));
+  // 1.5 (Acrobat 6): the minimum many Korean print shops ask for; nothing here needs newer features
+  push('%PDF-1.5\n'); push(new Uint8Array([37, 226, 227, 207, 211, 10]));
   const kids = pages.map((_, i) => `${3 + i * 3} 0 R`).join(' ');
   obj(1, '<< /Type /Catalog /Pages 2 0 R >>');
   obj(2, `<< /Type /Pages /Kids [${kids}] /Count ${pages.length} >>`);
